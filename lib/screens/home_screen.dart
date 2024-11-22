@@ -28,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const LegendOptions(legendPosition: LegendPosition.left),
           ),
           const Padding(
+
             padding: EdgeInsets.all(20),
             child: Card(
                 child: Column(
