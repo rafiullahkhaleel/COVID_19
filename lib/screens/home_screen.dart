@@ -72,3 +72,13 @@ class MyWidget extends StatelessWidget {
     );
   }
 }
+
+class hello extends StatelessWidget {
+  const hello({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
