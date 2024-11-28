@@ -32,9 +32,7 @@ class _CountriesListState extends State<CountriesList> {
       throw Exception('Error');
     }
   }
-
   TextEditingController searchController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
@@ -48,7 +46,6 @@ class _CountriesListState extends State<CountriesList> {
       filterCountries();
     });
   }
-
   void filterCountries() {
     setState(() {
       filteredList = dataList.where((country) {
@@ -79,7 +76,7 @@ class _CountriesListState extends State<CountriesList> {
                 controller: searchController,
                 decoration: InputDecoration(
                   hintText: 'Search with country name',
-                  hintStyle: TextStyle(
+                  hintStyle: const TextStyle(
                     color: Colors.black26,
                     fontWeight: FontWeight.w400
                   ),
