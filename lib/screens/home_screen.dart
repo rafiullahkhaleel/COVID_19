@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         PieChart(
                           dataMap: {
-                            'Total':
+                            'Total Cases':
                                 double.parse(snapshot.data!.cases.toString()),
                             'Recovered': double.parse(
                                 snapshot.data!.recovered.toString()),
@@ -66,70 +66,77 @@ class _HomeScreenState extends State<HomeScreen> {
                               legendPosition: LegendPosition.left),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(20),
+                          padding: const EdgeInsets.only(
+                              top: 20, left: 10, right: 10, bottom: 20),
                           child: Card(
+                              color: Colors.white70,
                               child: Column(
-                            children: [
-                              MyWidget(
-                                title: 'Total',
-                                value: snapshot.data!.cases.toString(),
-                              ),
-                              MyWidget(
-                                  title: 'Recovered',
-                                  value: snapshot.data!.recovered.toString()),
-                              MyWidget(
-                                  title: 'Deaths',
-                                  value: snapshot.data!.deaths.toString()),
-                              MyWidget(
-                                  title: 'Today Deaths',
-                                  value: snapshot.data!.todayDeaths.toString()),
-                              MyWidget(
-                                  title: 'Today Recovered',
-                                  value:
-                                      snapshot.data!.todayRecovered.toString()),
-                              MyWidget(
-                                  title: 'Today Cases',
-                                  value: snapshot.data!.todayCases.toString()),
-                              MyWidget(
-                                  title: 'Active',
-                                  value: snapshot.data!.active.toString()),
-                              MyWidget(
-                                  title: 'Critical',
-                                  value: snapshot.data!.critical.toString()),
-                              MyWidget(
-                                  title: 'Affected Countries',
-                                  value: snapshot.data!.affectedCountries
-                                      .toString())
-                            ],
-                          )),
+                                children: [
+                                  MyWidget(
+                                    title: 'Total Cases',
+                                    value: snapshot.data!.cases.toString(),
+                                  ),
+                                  MyWidget(
+                                      title: 'Recovered',
+                                      value:
+                                          snapshot.data!.recovered.toString()),
+                                  MyWidget(
+                                      title: 'Deaths',
+                                      value: snapshot.data!.deaths.toString()),
+                                  MyWidget(
+                                      title: 'Today Deaths',
+                                      value: snapshot.data!.todayDeaths
+                                          .toString()),
+                                  MyWidget(
+                                      title: 'Today Recovered',
+                                      value: snapshot.data!.todayRecovered
+                                          .toString()),
+                                  MyWidget(
+                                      title: 'Today Cases',
+                                      value:
+                                          snapshot.data!.todayCases.toString()),
+                                  MyWidget(
+                                      title: 'Active',
+                                      value: snapshot.data!.active.toString()),
+                                  MyWidget(
+                                      title: 'Critical',
+                                      value:
+                                          snapshot.data!.critical.toString()),
+                                  MyWidget(
+                                      title: 'Affected Countries',
+                                      value: snapshot.data!.affectedCountries
+                                          .toString())
+                                ],
+                              )),
                         ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return const CountriesList();
+                            }));
+                          },
+                          child: Container(
+                            height: 50,
+                            width: MediaQuery.of(context).size.width * .88,
+                            decoration: BoxDecoration(
+                                color: const Color(0xff1aa260),
+                                borderRadius: BorderRadius.circular(15)),
+                            child: const Center(
+                              child: Text(
+                                'Track Countries',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        )
                       ],
                     );
                   }
                 }),
-            InkWell(
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context){
-                  return const CountriesList();
-                }));
-              },
-              child: Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width * .88,
-                decoration: BoxDecoration(
-                    color: const Color(0xff1aa260),
-                    borderRadius: BorderRadius.circular(15)),
-                child: const Center(
-                  child: Text(
-                    'Track Countries',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            )
           ],
         ),
       ),

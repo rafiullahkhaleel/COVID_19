@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'package:covid_19/individual_data.dart';
 import 'package:covid_19/model/countriesmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shimmer/shimmer.dart';
+
+
 
 class CountriesList extends StatefulWidget {
   const CountriesList({super.key});
@@ -57,59 +61,119 @@ class _CountriesListState extends State<CountriesList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: TextField(
-              controller: searchController,
-              decoration: InputDecoration(
-                hintText: 'Search with country name',
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(50)),
+    return SafeArea(
+      child: Scaffold(
+        
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10,),
+            IconButton(onPressed: (){
+              Navigator.of(context).pop();
+            },
+                icon: const Icon(Icons.arrow_back_ios_new)),
+            const SizedBox(height: 20,),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search with country name',
+                  hintStyle: TextStyle(
+                    color: Colors.black26,
+                    fontWeight: FontWeight.w400
+                  ),
+                  border:
+                      OutlineInputBorder(borderRadius: BorderRadius.circular(50)),
+                ),
               ),
             ),
-          ),
-          filteredList.isEmpty
-              ? const CircularProgressIndicator()
-              : Expanded(
+            const SizedBox(height: 10,),
+            filteredList.isEmpty
+                ? Expanded(
                   child: ListView.builder(
-                      itemCount: filteredList.length,
-                      itemBuilder: (context, index) {
-                        return Column(
-                          children: [
-                            const SizedBox(height: 15),
-                            Row(
-                              children: [
-                                const SizedBox(width: 10),
-                                CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                      filteredList[index].countryInfo!.flag.toString()),
-                                  radius: 30,
-                                ),
-                                const SizedBox(width: 10),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                  itemCount: 15,
+                  itemBuilder: (context,index){
+                    return Shimmer.fromColors(
+                        baseColor: Colors.grey.shade200,
+                        highlightColor: Colors.grey.shade100,
+                        child:ListTile(
+                          leading:  Container(
+                            height: 43,
+                            width: 50,
+                            color: Colors.white,
+                          ),
+                          title:  Container(
+                            height:15 ,
+                            width: 80,
+                            color: Colors.white,
+                          ),
+                          subtitle:  Container(
+                            height: 15,
+                            width: 80,
+                            color: Colors.white,
+                          ),
+                        )
+                    );
+                  }
+                            ),
+                )
+                : Expanded(
+                    child: ListView.builder(
+                        itemCount: filteredList.length,
+                        itemBuilder: (context, index) {
+                          return Column(
+                            children: [
+                              const SizedBox(height: 15),
+                              InkWell(
+                                child: Row(
                                   children: [
-                                    Text(
-                                      filteredList[index].country.toString(),
-                                      style: const TextStyle(fontSize: 15),
+                                    const SizedBox(width: 10),
+                                    CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                          filteredList[index].countryInfo!.flag.toString()),
+                                      radius: 30,
                                     ),
-                                    Text(
-                                      filteredList[index].continent.toString(),
-                                      style: const TextStyle(fontSize: 11),
-                                    )
+                                    const SizedBox(width: 10),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          filteredList[index].country.toString(),
+                                          style: const TextStyle(fontSize: 15),
+                                        ),
+                                        Text(
+                                          filteredList[index].continent.toString(),
+                                          style: const TextStyle(fontSize: 11),
+                                        )
+                                      ],
+                                    ),
                                   ],
                                 ),
-                              ],
-                            ),
-                          ],
-                        );
-                      }),
-                ),
-        ],
+                                onTap: (){
+                                      Navigator.push(context, MaterialPageRoute(builder: (context){
+                                   return  IndividualData(
+                                     name: filteredList[index].country.toString(),
+                                     flag: filteredList[index].countryInfo!.flag.toString(),
+                                     cases: filteredList[index].cases.toString(),
+                                     todayCases: filteredList[index].todayCases.toString(),
+                                     deaths: filteredList[index].deaths.toString(),
+                                     todayDeaths: filteredList[index].todayDeaths.toString(),
+                                     recovered: filteredList[index].recovered.toString() ,
+                                     todayRecovered: filteredList[index].todayRecovered.toString() ,
+                                     active: filteredList[index].active.toString(),
+                                     critical: filteredList[index].critical.toString(),
+                                     population:filteredList[index].population.toString() ,
+                                   );
+                                },));
+                                }
+                              )
+                            ],
+                          );
+                        }),
+                  ),
+          ],
+        ),
       ),
     );
   }
