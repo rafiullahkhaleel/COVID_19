@@ -1,5 +1,11 @@
+import 'dart:convert';
+
+import 'package:covid_19/model/CovidAPIModel.dart';
+import 'package:covid_19/screens/countries_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:pie_chart/pie_chart.dart';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -9,41 +15,134 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Future<CovidApiModel> getData() async {
+    final response =
+        await http.get(Uri.parse('https://disease.sh/v3/covid-19/all'));
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      return CovidApiModel.fromJson(data);
+    } else {
+      throw Exception('Error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-          child: Column(
-        children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.03,
-          ),
-          PieChart(
-            dataMap: pieList,
-            chartType: ChartType.ring,
-            chartRadius: 180,
-            animationDuration: const Duration(milliseconds: 2000),
-            colorList: colorList,
-            legendOptions:
-                const LegendOptions(legendPosition: LegendPosition.left),
-          ),
-          const Padding(
-            padding: EdgeInsets.all(20),
-            child: Card(
-                child: Column(
-              children: [
-                MyWidget(title: 'Hello', value: 'World'),
-                MyWidget(title: 'Hello', value: 'World'),
-                MyWidget(title: 'Hello', value: 'World'),
-              ],
-            )),
-          )
-        ],
-      )),
+    return SafeArea(
+      child: Scaffold(
+        body: Column(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.03,
+            ),
+            FutureBuilder(
+                future: getData(),
+                builder: (context, AsyncSnapshot<CovidApiModel> snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Expanded(
+                        child: SpinKitSpinningLines(
+                      color: Colors.black,
+                    ));
+                  } else {
+                    return Column(
+                      children: [
+                        PieChart(
+                          dataMap: {
+                            'Total Cases':
+                                double.parse(snapshot.data!.cases.toString()),
+                            'Recovered': double.parse(
+                                snapshot.data!.recovered.toString()),
+                            'Deaths':
+                                double.parse(snapshot.data!.deaths.toString()),
+                          },
+                          chartValuesOptions: const ChartValuesOptions(
+                              showChartValuesInPercentage: true),
+                          chartType: ChartType.ring,
+                          chartRadius: 160,
+                          animationDuration: const Duration(milliseconds: 2000),
+                          colorList: colorList,
+                          legendOptions: const LegendOptions(
+                              legendPosition: LegendPosition.left),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 20, left: 10, right: 10, bottom: 20),
+                          child: Card(
+                              color: Colors.white70,
+                              child: Column(
+                                children: [
+                                  MyWidget(
+                                    title: 'Total Cases',
+                                    value: snapshot.data!.cases.toString(),
+                                  ),
+                                  MyWidget(
+                                      title: 'Recovered',
+                                      value:
+                                          snapshot.data!.recovered.toString()),
+                                  MyWidget(
+                                      title: 'Deaths',
+                                      value: snapshot.data!.deaths.toString()),
+                                  MyWidget(
+                                      title: 'Today Deaths',
+                                      value: snapshot.data!.todayDeaths
+                                          .toString()),
+                                  MyWidget(
+                                      title: 'Today Recovered',
+                                      value: snapshot.data!.todayRecovered
+                                          .toString()),
+                                  MyWidget(
+                                      title: 'Today Cases',
+                                      value:
+                                          snapshot.data!.todayCases.toString()),
+                                  MyWidget(
+                                      title: 'Active',
+                                      value: snapshot.data!.active.toString()),
+                                  MyWidget(
+                                      title: 'Critical',
+                                      value:
+                                          snapshot.data!.critical.toString()),
+                                  MyWidget(
+                                      title: 'Affected Countries',
+                                      value: snapshot.data!.affectedCountries
+                                          .toString())
+                                ],
+                              )),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return const CountriesList();
+                            }));
+                          },
+                          child: Container(
+                            height: 50,
+                            width: MediaQuery.of(context).size.width * .88,
+                            decoration: BoxDecoration(
+                                color: const Color(0xff1aa260),
+                                borderRadius: BorderRadius.circular(15)),
+                            child: const Center(
+                              child: Text(
+                                'Track Countries',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    );
+                  }
+                }),
+          ],
+        ),
+      ),
     );
   }
 
-  final pieList = <String, double>{'Total': 30, 'Recover': 10, 'Death': 20};
   final colorList = <Color>[
     const Color(0xff4285F4),
     const Color(0xff1aa260),
